@@ -1,0 +1,14 @@
+{
+  "name": "8bot",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "repository": "git@github.com:greg-harrison/8bot.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon bot.js"
+  },
+  "dependencies": {
+    "discordie": "^0.11.0",
+    "nodemon": "^1.11.0"
+  }
+}
