@@ -16,6 +16,12 @@ client.Dispatcher.on(Events.GATEWAY_READY, e => {
 })
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
+    const bot = client.Users.find(u => u.username == "8bot");
+
+    if (bot.isMentioned(e.message)) {
+        e.message.channel.sendMessage('Hello World')
+    }
+
     if (!e.message.author.bot) {
         switch (true) {
             case (e.message.content.indexOf('!ship') != -1):
