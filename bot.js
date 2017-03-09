@@ -9,6 +9,11 @@ const client = new Discordie()
 const token = process.env.token
 
 client.connect({token})
+client.autoReconnect().enabled(true)
+
+client.Dispatcher.on(Event.DISCONNECTED, e => {
+    consoleResponses.disconnected(e)
+})
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
     consoleResponses.awake(client)
