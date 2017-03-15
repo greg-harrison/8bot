@@ -1,17 +1,17 @@
 const Discordie = require('discordie')
 const consoleResponses = require('./actions/consoleResponses')
 const randomStatement = require('./actions/randomStatement')
+const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
 var Events = Discordie.Events
 
-const client = new Discordie()
+const client = new Discordie({autoReconnect: true})
 const token = process.env.token
 
 client.connect({token})
-client.autoReconnect().enabled(true)
 
-client.Dispatcher.on(Event.DISCONNECTED, e => {
+client.Dispatcher.on(Events.DISCONNECTED, e => {
     consoleResponses.disconnected(e)
 })
 
@@ -45,6 +45,9 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 break;
             case (message.indexOf('!motivation') != -1):
                 randomStatement.motivation(e);
+                break;
+            case (message.indexOf('!event') != -1):
+                eventCtrl.eventController(e);
                 break;
 
             // Triggered by events or circumstances
