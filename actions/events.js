@@ -21,7 +21,8 @@ const eventController = (e) => {
             break;
 
         default:
-            responses.test(e, 'Command not recognized: Supported Commands ```!event new \n!event upcoming \n!event all```')
+            responses.test(e, 
+            '```Command not recognized: Supported Commands\n!event new \n!event upcoming \n!event all```')
             break;
     }
 
