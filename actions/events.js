@@ -16,6 +16,10 @@ const eventController = (e) => {
             responses.test(e, 'Hello Upcoming')
             break;
 
+        case (message.indexOf('rsvp') != -1):
+            responses.test(e, 'Hello rsvp')
+            break;
+
         case (message.indexOf('all') != -1):
             responses.test(e, 'Hello All')
             break;
