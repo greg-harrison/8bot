@@ -8,5 +8,8 @@ module.exports = {
     test: (e, text) => {
         console.log('text', text)
         e.message.channel.sendMessage(text)
+    },
+    testStatus: (e) => {
+        e.message.channel.sendMessage('')
     }
 }
