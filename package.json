@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon bot.js",
-    "dev-start": "sudo mongod & nodemon --exec 'mocha ./**/**.spec.js || true' & nodemon bot.js",
+    "dev-start": "nodemon --exec 'mocha ./**/**.spec.js || true' & nodemon bot.js",
     "test": "mocha ./**/**.spec.js"
   },
   "dependencies": {

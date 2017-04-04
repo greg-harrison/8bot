@@ -32,8 +32,20 @@ client.Dispatcher.on(Events.DISCONNECTED, e => {
     consoleResponses.disconnected(e)
 })
 
-client.Dispatcher.on(Events.GATEWAY_READY, e => {
+client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
+    const guild = client.Guilds.getBy('name', 'Self')
+    const eightBit = client.Users.find(u => u.username == "8BitTorrent");
+
     consoleResponses.awake(client)
+
+    if (guild) {
+        const general = guild.textChannels.filter(c => c.name == 'general')[0]
+        if (general) {
+            return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational.")
+        }
+        return console.log('Channel not found')
+    }
+
 })
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {

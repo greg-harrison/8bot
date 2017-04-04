@@ -1,4 +1,7 @@
 module.exports = {
+    awake: (e) => {
+        console.log(e)
+    },
     helloWorld: (e) => {
         e.message.channel.sendMessage('Hello World')
     },

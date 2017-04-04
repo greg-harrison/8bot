@@ -1,6 +1,7 @@
 module.exports = {
     awake: (client) => {
-        console.log(client.User.username + ' - Current Status: ' + client.User.status)
+        const guild = client.Guilds.getBy('name', 'Self')
+        console.log(client.User.username + '@'+ guild + ' - Current Status: ' + client.User.status)
     },
     disconnected: (e) => {
         console.log(e.error.message)
