@@ -7,9 +7,11 @@ const ship = require('./actions/ship')
 
 
 // In the future, I will make multiple Mongoose schemas.
-    // Notes-to-Self, that takes in the name/date/message
+    // Notes-to-Self, Use command keep, takes in the name/date/message
     // Session commands, keep track of what commands I try to use while I'm working
     // stuff like that
+
+// At some point, the plan is to build a sibling system that will query the data out of this MongoDB instance and show it in a GUI
 
 var mongoose = require('mongoose')
 const MONGO_HOST = (process.env.MONGO_HOST || 'localhost')
@@ -46,8 +48,12 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
 
     if (guild) {
         const general = guild.textChannels.filter(c => c.name == 'general')[0]
+        const notes2self = guild.textChannels.filter(c => c.name == 'notes-to-self')[0]
         if (general) {
             return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational.")
+        }
+        if (notes2self) {
+            return notes2self.sendMessage("Hey "+ eightBit.mention + ", I'm online. You can store notes to yourself in Mongo by running !keep <text>")
         }
         return console.log('Channel not found')
     }
