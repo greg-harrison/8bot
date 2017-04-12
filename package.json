@@ -7,7 +7,8 @@
   "scripts": {
     "start": "nodemon bot.js",
     "dev-start": "nodemon --exec 'mocha ./**/**.spec.js || true' & nodemon bot.js",
-    "test": "mocha ./**/**.spec.js"
+    "test": "mocha ./**/**.spec.js",
+    "forever": "forever bot.js"
   },
   "dependencies": {
     "discordie": "^0.11.0",

@@ -5,6 +5,14 @@ const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
 
+
+// In the future, I will make multiple Mongoose schemas.
+    // Notes-to-Self, Use command keep, takes in the name/date/message
+    // Session commands, keep track of what commands I try to use while I'm working
+    // stuff like that
+
+// At some point, the plan is to build a sibling system that will query the data out of this MongoDB instance and show it in a GUI
+
 var mongoose = require('mongoose')
 const MONGO_HOST = (process.env.MONGO_HOST || 'localhost')
 const MONGO_PORT = (process.env.MONGO_PORT || '27017')
@@ -40,8 +48,12 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
 
     if (guild) {
         const general = guild.textChannels.filter(c => c.name == 'general')[0]
+        const notes2self = guild.textChannels.filter(c => c.name == 'notes-to-self')[0]
         if (general) {
             return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational.")
+        }
+        if (notes2self) {
+            return notes2self.sendMessage("Hey "+ eightBit.mention + ", I'm online. You can store notes to yourself in Mongo by running !keep <text>")
         }
         return console.log('Channel not found')
     }
@@ -74,6 +86,9 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 break;
             case (message.indexOf('!motivation') != -1):
                 randomStatement.motivation(e);
+                break;
+            case (message.indexOf('!mfw') != -1):
+                randomStatement.happyGifs(e)
                 break;
             case (message.indexOf('!event') != -1):
                 eventCtrl.eventController(e);
