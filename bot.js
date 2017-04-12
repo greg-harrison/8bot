@@ -87,6 +87,9 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             case (message.indexOf('!motivation') != -1):
                 randomStatement.motivation(e);
                 break;
+            case (message.indexOf('!mfw') != -1):
+                randomStatement.happyGifs(e)
+                break;
             case (message.indexOf('!event') != -1):
                 eventCtrl.eventController(e);
                 break;
