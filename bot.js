@@ -5,6 +5,12 @@ const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
 
+
+// In the future, I will make multiple Mongoose schemas.
+    // Notes-to-Self, that takes in the name/date/message
+    // Session commands, keep track of what commands I try to use while I'm working
+    // stuff like that
+
 var mongoose = require('mongoose')
 const MONGO_HOST = (process.env.MONGO_HOST || 'localhost')
 const MONGO_PORT = (process.env.MONGO_PORT || '27017')

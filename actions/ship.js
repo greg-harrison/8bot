@@ -1,5 +1,5 @@
 function randomInt(min, max) {
-    // Need to rework this
+    // TODO: Need to rework this
         // Currently it's returning single-digit values.
         // Need to tweak the algorithm when I have a chance
   min = Math.ceil(min);
