@@ -17,13 +17,15 @@ var mongoose = require('mongoose')
 const MONGO_HOST = (process.env.MONGO_HOST || 'localhost')
 const MONGO_PORT = (process.env.MONGO_PORT || '27017')
 mongoose.connect(`mongodb://${MONGO_HOST}:${MONGO_PORT}/local`);
-const testSchema = new mongoose.Schema({
+
+const notesSchema = new mongoose.Schema({
     name: String,
-    message: String
+    message: String,
+    time: Date
 });
-testSchema.index({ _id: 1 }, { sparse: true })
-mongoose.model('Test', testSchema);
-var Test = mongoose.model('Test');
+notesSchema.index({ _id: 1 }, { sparse: true })
+mongoose.model('Notes', notesSchema);
+var Notes = mongoose.model('Notes');
 
 // testSchema allows the passing of a username and message into the db
 // To collect and store other data (such as the use-case of collecting data on Wendy's bathroom habits)
@@ -57,7 +59,6 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
         }
         return console.log('Channel not found')
     }
-
 })
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
@@ -93,12 +94,16 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             case (message.indexOf('!event') != -1):
                 eventCtrl.eventController(e);
                 break;
-            case (message.indexOf('!mongo') != -1):
+            case (message.indexOf('!help') != -1):
+                responses.help(e);
+                break;
+            case (message.indexOf('!keep') != -1):
                 var cleanedMessage = message.split(" ").slice(1).join(' ')
 
-                var newTest = new Test({
+                var newTest = new Notes({
                     name: e.message.author.username, 
-                    message: cleanedMessage
+                    message: cleanedMessage,
+                    time: e.message.timestamp 
                 })
 
                 newTest.save((err)=>{
