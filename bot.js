@@ -7,7 +7,7 @@ const ship = require('./actions/ship')
 
 
 // In the future, I will make multiple Mongoose schemas.
-    // Notes-to-Self, Use command keep, takes in the name/date/message
+    // Notes-to-Self, Use command Keep, takes in the name/date/message
     // Session commands, keep track of what commands I try to use while I'm working
     // stuff like that
 
@@ -64,6 +64,8 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     if (eightBot.isMentioned(e.message)) {
         if (messageArray.length === 1) {
             responses.helloWorld(e)
+        } else if (message.toLowerCase().indexOf('where are you?') != -1) {
+            responses.whereAmI(e)
         } else {
             responses.whatAStory(e, 'Mark')
         }
@@ -73,26 +75,33 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     if (!e.message.author.bot) {
         switch (true) {
             // Triggered by commands
-            case (message.indexOf('!ship') != -1):
+            case ((message.toLowerCase().indexOf('!ship') != -1)):
                 // TODO: Algorithm for choosing the ship percentage needs to be updated
                 ship.ship(e);           
                 break;
-            case (message.indexOf('!quote') != -1):
+            case ((message.toLowerCase().indexOf('!quote') != -1)):
                 randomStatement.quotes(e);
                 break;
-            case (message.indexOf('!motivation') != -1):
+            case ((message.toLowerCase().indexOf('!motivation') != -1)):
                 randomStatement.motivation(e);
                 break;
-            case (message.indexOf('!mfw') != -1):
+            case ((message.toLowerCase().indexOf('!mfw') != -1)):
                 randomStatement.happyGifs(e)
                 break;
-            case (message.indexOf('!event') != -1):
+            case ((message.toLowerCase().indexOf('!event') != -1)):
                 eventCtrl.eventController(e);
                 break;
-            case (message.indexOf('!help') != -1):
+            case ((message.toLowerCase().indexOf('!help') != -1)):
                 responses.help(e);
                 break;
-            case (message.indexOf('!keep') != -1):
+            case ((message.toLowerCase().indexOf('!uptime') != -1)):
+                let minutes = Math.floor(process.uptime() / 60);
+                responses.test(e, `${minutes} minute${minutes!==1?'s':''}`);
+                break;
+            case ((message.toLowerCase().indexOf('!ip') != -1)):
+                responses.whereAmI(e);
+                break;
+            case ((message.toLowerCase().indexOf('!keep') != -1)):
                 var cleanedMessage = message.split(" ").slice(1).join(' ')
 
                 var newTest = new Notes({
@@ -103,7 +112,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
 
                 newTest.save((err)=>{
                     if(err) {
-                        responses.test(e, err)
+                        responses.test(e, `:x: ${err}`)
                     } else {
                         responses.test(e, ':white_check_mark: Message written to database')
                     }
