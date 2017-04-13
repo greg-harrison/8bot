@@ -27,11 +27,6 @@ notesSchema.index({ _id: 1 }, { sparse: true })
 mongoose.model('Notes', notesSchema);
 var Notes = mongoose.model('Notes');
 
-// testSchema allows the passing of a username and message into the db
-// To collect and store other data (such as the use-case of collecting data on Wendy's bathroom habits)
-//   We may need to make it slightly more robust, or make a completely separate Schema entirely.
-//   I believe schemas are a 1:1 with a particular table (thus, TestSchema generates db.tests in Mongo)
-
 var Events = Discordie.Events
 const client = new Discordie({autoReconnect: true})
 const token = process.env.token
@@ -110,7 +105,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     if(err) {
                         responses.test(e, err)
                     } else {
-                        responses.test(e, 'Message written to database')
+                        responses.test(e, ':white_check_mark: Message written to database')
                     }
                 })
                 break;
