@@ -1,3 +1,5 @@
+const ip = require('ip')
+
 const commands = [
     '```',
         'COMMANDS\n',
@@ -27,6 +29,9 @@ module.exports = {
     test: (e, text) => {
         console.log('text', text)
         e.message.channel.sendMessage(text)
+    },
+    whereAmI: (e) => {
+        e.message.channel.sendMessage(ip.address())
     },
     testStatus: (e) => {
         e.message.channel.sendMessage('')
