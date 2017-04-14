@@ -101,6 +101,18 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             case ((message.toLowerCase().indexOf('!ip') != -1)):
                 responses.whereAmI(e);
                 break;
+            case ((message.toLowerCase().indexOf('!query') != -1)):
+                let queryResponse
+                let Note = mongoose.model('Notes', Notes);
+
+                Note.findOne({'name': '8BitTorrent'}, 'name message time', (err, note) => {
+                    if (err) return handleError(err);
+                    console.log(`${note.name} posted '${note.message}' at ${note.time}`)
+                    let queryResponse = `${note.name} posted '${note.message}' at ${note.time}`
+                })
+
+                responses.test(e, queryResponse)
+                break;
             case ((message.toLowerCase().indexOf('!keep') != -1)):
                 var cleanedMessage = message.split(" ").slice(1).join(' ')
 
