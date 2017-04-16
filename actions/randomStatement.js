@@ -16,14 +16,6 @@ const quotesArray = [
     "Don't stop when you're tired, stop when you're done. -Unknown"
 ]
 
-const happyGifs = [
-    'https://media.giphy.com/media/tdr6m1OVPIqAM/giphy.gif',
-    'https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif',
-    'https://media.giphy.com/media/3Cm8cxtSHqu6Q/giphy.gif',
-    'https://media.giphy.com/media/JWGgsu82QDoEE/giphy.gif',
-    'https://media.giphy.com/media/w7dn7xRSHGZUs/giphy.gif'
-]
-
 function randomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -38,9 +30,5 @@ module.exports = {
     quotes: (e) => {
         let index = randomInt(0, quotesArray.length)
         e.message.channel.sendMessage(quotesArray[index])
-    },
-    happyGifs: (e) => {
-        let index = randomInt(0, happyGifs.length)
-        e.message.channel.sendMessage(happyGifs[index])
     }
 }

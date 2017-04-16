@@ -1,6 +1,7 @@
 const Discordie = require('discordie')
 const consoleResponses = require('./actions/consoleResponses')
 const randomStatement = require('./actions/randomStatement')
+const giphy = require('./actions/giphy')
 const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
@@ -17,6 +18,8 @@ var mongoose = require('mongoose')
 const MONGO_HOST = (process.env.MONGO_HOST || 'localhost')
 const MONGO_PORT = (process.env.MONGO_PORT || '27017')
 mongoose.connect(`mongodb://${MONGO_HOST}:${MONGO_PORT}/local`);
+
+const BOT_MODE = (process.env.BOT_MODE || 'Dev')
 
 const notesSchema = new mongoose.Schema({
     name: String,
@@ -47,7 +50,7 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
         const general = guild.textChannels.filter(c => c.name == 'general')[0]
         const notes2self = guild.textChannels.filter(c => c.name == 'notes-to-self')[0]
         if (general) {
-            return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational.")
+            return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational. Running in " + BOT_MODE)
         }
         if (notes2self) {
             return notes2self.sendMessage("Hey "+ eightBit.mention + ", I'm online. You can store notes to yourself in Mongo by running !keep <text>")
@@ -86,7 +89,9 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 randomStatement.motivation(e);
                 break;
             case ((message.toLowerCase().indexOf('!mfw') != -1)):
-                randomStatement.happyGifs(e)
+                messageArray.splice(0,1)
+                let query = messageArray.join('+')
+                giphy.search(e, query)
                 break;
             case ((message.toLowerCase().indexOf('!event') != -1)):
                 eventCtrl.eventController(e);
@@ -100,6 +105,18 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 break;
             case ((message.toLowerCase().indexOf('!ip') != -1)):
                 responses.whereAmI(e);
+                break;
+            case ((message.toLowerCase().indexOf('!query') != -1)):
+                let queryResponse
+                let Note = mongoose.model('Notes', Notes);
+
+                Note.findOne({'name': '8BitTorrent'}, 'name message time', (err, note) => {
+                    if (err) return handleError(err);
+                    console.log(`${note.name} posted '${note.message}' at ${note.time}`)
+                    let queryResponse = `${note.name} posted '${note.message}' at ${note.time}`
+                })
+
+                responses.test(e, queryResponse)
                 break;
             case ((message.toLowerCase().indexOf('!keep') != -1)):
                 var cleanedMessage = message.split(" ").slice(1).join(' ')
