@@ -6,6 +6,9 @@ const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
 
+// TODO: Add a module for querying Mongo that takes in a command like /last 2 notes
+        // Parse out 2 as the number of records to return from the Notes collection
+        // This would add greater flexibility, since I would be able to query new collections as I make them.
 
 // In the future, I will make multiple Mongoose schemas.
     // Notes-to-Self, Use command Keep, takes in the name/date/message
@@ -28,7 +31,7 @@ const notesSchema = new mongoose.Schema({
 });
 notesSchema.index({ _id: 1 }, { sparse: true })
 mongoose.model('Notes', notesSchema);
-var Notes = mongoose.model('Notes');
+const Notes = mongoose.model('Notes');
 
 var Events = Discordie.Events
 const client = new Discordie({autoReconnect: true})
@@ -58,6 +61,13 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
         return console.log('Channel not found')
     }
 })
+format = (seconds) => {
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
+
+  return hours + ' hours and ' + minutes + ' minutes';
+}
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     const eightBot = client.Users.find(u => u.username == "8bot");
@@ -100,8 +110,8 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 responses.help(e);
                 break;
             case ((message.toLowerCase().indexOf('!uptime') != -1)):
-                let minutes = Math.floor(process.uptime() / 60);
-                responses.test(e, `${minutes} minute${minutes!==1?'s':''}`);
+                let uptime = Math.floor(process.uptime())
+                responses.test(e, `I've been up for ${format(uptime)}`)
                 break;
             case ((message.toLowerCase().indexOf('!ip') != -1)):
                 responses.whereAmI(e);
@@ -134,6 +144,21 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                         responses.test(e, ':white_check_mark: Message written to database')
                     }
                 })
+                break;
+
+            case ((message.toLowerCase().indexOf('!last') != -1)):
+                var shortenedMessage = message.split(" ").slice(1)
+                let num, collection
+
+                if (shortenedMessage.length >= 2) {
+                    num = Math.floor(shortenedMessage[0])
+                    collection = shortenedMessage[1]
+                } 
+
+                let response = Note.limit(num).exec((res)=>{
+                    console.log(res)
+                })
+
                 break;
 
             // Triggered by events or circumstances
