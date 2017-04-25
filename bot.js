@@ -1,10 +1,12 @@
 const Discordie = require('discordie')
 const consoleResponses = require('./actions/consoleResponses')
 const randomStatement = require('./actions/randomStatement')
+const releaseCtrl = require('./actions/release')
 const giphy = require('./actions/giphy')
 const eventCtrl = require('./actions/events')
 const responses = require('./actions/responses')
 const ship = require('./actions/ship')
+const _ = require('lodash')
 
 // TODO: Add a module for querying Mongo that takes in a command like /last 2 notes
         // Parse out 2 as the number of records to return from the Notes collection
@@ -52,11 +54,11 @@ client.Dispatcher.on(Events.GATEWAY_READY, (e) => {
     if (guild) {
         const general = guild.textChannels.filter(c => c.name == 'general')[0]
         const notes2self = guild.textChannels.filter(c => c.name == 'notes-to-self')[0]
-        if (general) {
-            return general.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational. Running in " + BOT_MODE)
-        }
-        if (notes2self) {
-            return notes2self.sendMessage("Hey "+ eightBit.mention + ", I'm online. You can store notes to yourself in Mongo by running !keep <text>")
+        const release = guild.textChannels.filter(c => c.name == 'release')[0]
+        const botStatus = guild.textChannels.filter(c => c.name == 'bot-status')[0]
+
+        if (botStatus) {
+            return botStatus.sendMessage("Hey "+ eightBit.mention + ", I'm online and fully operational. Running in " + BOT_MODE)
         }
         return console.log('Channel not found')
     }
@@ -70,9 +72,20 @@ format = (seconds) => {
 }
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
+    const guild = client.Guilds.getBy('name', 'Self')
+    const release = guild.textChannels.filter(c => c.name == 'release')[0]
     const eightBot = client.Users.find(u => u.username == "8bot");
     const message = e.message.content
     var messageArray = message.split(" ") 
+
+    if (guild && release) {
+        if (e.message.content.toLowerCase().indexOf('!clear') != -1){
+            releaseCtrl.clear(release, client)
+        }
+        else if(e.message.channel_id === release.id){
+            releaseCtrl.release(e.message, release, client)
+        }
+    }
 
     if (eightBot.isMentioned(e.message)) {
         if (messageArray.length === 1) {
@@ -117,17 +130,21 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 responses.whereAmI(e);
                 break;
             case ((message.toLowerCase().indexOf('!query') != -1)):
-                let queryResponse
-                let Note = mongoose.model('Notes', Notes);
 
-                Note.findOne({'name': '8BitTorrent'}, 'name message time', (err, note) => {
-                    if (err) return handleError(err);
-                    console.log(`${note.name} posted '${note.message}' at ${note.time}`)
-                    let queryResponse = `${note.name} posted '${note.message}' at ${note.time}`
-                })
-
-                responses.test(e, queryResponse)
+                Notes.find({name: '8BitTorrent'})
+                     .limit(10)
+                     .select('name message time')
+                     .sort('-time')
+                     .exec((err, res) => {
+                        if (err) return handleError(err);
+                        var mappedArray = _.map(res, (note, index) => {
+                            let formattedTime = note.time.toDateString()
+                            let queryResponse = `${formattedTime} : ${note.name} stored '${note.message}' in Notes`
+                            responses.test(e, queryResponse)
+                        })
+                    })
                 break;
+
             case ((message.toLowerCase().indexOf('!keep') != -1)):
                 var cleanedMessage = message.split(" ").slice(1).join(' ')
 
