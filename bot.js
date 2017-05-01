@@ -74,8 +74,13 @@ format = (seconds) => {
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     const guild = client.Guilds.getBy('name', 'Self')
     const release = guild.textChannels.filter(c => c.name == 'release')[0]
+    const status = guild.textChannels.filter(c => c.name == 'bot-status')[0]
     const eightBot = client.Users.find(u => u.username == "8bot");
-    const message = e.message.content
+    const message = e.message.content;
+
+    const messageInStatus = (e.message.channel_id === status.id); 
+    const messageInRelease = (e.message.channel_id === release.id); 
+
     var messageArray = message.split(" ") 
 
     if (guild && release) {
@@ -90,6 +95,8 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     if (eightBot.isMentioned(e.message)) {
         if (messageArray.length === 1) {
             responses.helloWorld(e)
+        } else if (message.toLowerCase().indexOf('bye') != -1) {
+            responses.bye(e)
         } else if (message.toLowerCase().indexOf('where are you?') != -1) {
             responses.whereAmI(e)
         } else {
@@ -122,10 +129,11 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             case ((message.toLowerCase().indexOf('!help') != -1)):
                 responses.help(e);
                 break;
-            case ((message.toLowerCase().indexOf('!uptime') != -1)):
+            case ((message.toLowerCase().indexOf('!uptime') != -1)): {
                 let uptime = Math.floor(process.uptime())
                 responses.test(e, `I've been up for ${format(uptime)}`)
                 break;
+            }
             case ((message.toLowerCase().indexOf('!ip') != -1)):
                 responses.whereAmI(e);
                 break;
@@ -182,6 +190,21 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             case (messageArray.length >= 100):
                 responses.whatAStory(e, 'Mark');
                 break;
+
+            case (messageInStatus && (message.toLowerCase().indexOf('uptime') != -1)): {
+                let uptime = Math.floor(process.uptime())
+                responses.test(e, `I've been up for ${format(uptime)}`)
+                break;
+            }
+            case (messageInStatus && (message.toLowerCase().indexOf('where are you') != -1)): {
+                responses.whereAmI(e)
+                break;
+            }
+
+            case(messageInRelease && (message.toLowerCase().indexOf('clear') != -1)): {
+                releaseCtrl.release(e.message, release, client)
+                responses.test(e, 'cleared')
+            }
 
             default:
                 console.log(e)

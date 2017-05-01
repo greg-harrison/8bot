@@ -3,6 +3,7 @@ module.exports = ({
         client.Messages.deleteMessage(message.id, channel.id)
     },
     clear: (channel, client) => {
-        client.Messages.purgeChannelCache(channel.id)
+        var message = client.Messages.find(m => true); // get any message
+        client.Messages.deleteMessage(message.id, channel.id);
     }
 })

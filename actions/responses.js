@@ -17,6 +17,9 @@ module.exports = {
     awake: (e) => {
         console.log(e)
     },
+    bye: (e) => {
+        e.message.channel.sendMessage('See you! Have a nice day!')
+    },
     helloWorld: (e) => {
         e.message.channel.sendMessage('Hello World')
     },
